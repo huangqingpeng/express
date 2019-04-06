@@ -21,6 +21,25 @@
     <p>
         <%- tname %>
     </p>
+
+    <!-- <p>
+        <%= username %>
+    </p> -->
+
+    <% if(!username){ %>
+        <div class="">
+            <input type="button" value="登陆" onclick="location.href='/login'">
+            <input type="button" value="注册" onclick="location.href='/registor'">
+        </div>
+        <% } else { %>
+            <div>
+                你好：
+                <%= username %>
+                    <input type="button" value="评论" onclick="location.href='/comment'" />
+
+                    <input type="button" value="注销" onclick="location.href='/loginout'" />
+            </div>
+            <% } %>
 </body>
 
 </html>

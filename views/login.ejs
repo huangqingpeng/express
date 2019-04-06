@@ -5,22 +5,26 @@
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/style.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 
 <body>
-    <form action="./users/login" method="get">
+    <%- include header %>
 
-        <label for="">
+
+        <form action="./users/login" method="post">
+
+            <label for="">
             用户名：<input type="text" name="username" />
         </label>
-        <label for="">
+            <label for="">
             密码：<input type="password" name="password" />
         </label>
-        <label for="">
+            <label for="">
             <input type="submit" name="submit" value="确定" />
         </label>
-    </form>
+        </form>
 </body>
 
 </html>

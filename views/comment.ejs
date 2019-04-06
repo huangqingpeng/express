@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>评论</title>
+    <script src="/javascripts/xheditor-1.2.2/jquery/jquery-1.11.2.min.js"></script>
+    <script src="/javascripts/xheditor-1.2.2/xheditor-1.2.2.min.js"></script>
+</head>
+
+<body>
+    <%- include header %>
+
+        <form action="/comment/submit" method='post'>
+            标题：<input type="text" name="title" value="" />
+            <br /> <br />内容：
+            <textarea name="content" id="content" cols="30" rows="10"></textarea>
+            <br /><br />
+            <input type="submit" name="submit" value="提交">
+        </form>
+</body>
+<script>
+    $(pageInit)
+
+    function pageInit() {
+        // $.extend(XHEDITOR.settings, {
+        //     shortcuts: {
+        //         'ctrl+enter': submitForm
+        //     }
+        // })
+        $('#content').xheditor({
+            html5Upload: false, //兼容高版本浏览器
+            upMultiple: '1', //兼容高版本浏览器
+
+
+            tools: 'full',
+            skin: 'default',
+            showBlocktag: true,
+            internalScript: false,
+            internalStyle: false,
+            width: 300,
+            height: 200,
+            // loadCSS: 'http://xheditor.com/test.css',
+            // fullscreen: true,
+            sourceMode: true,
+            forcePtag: true,
+            upImgUrl: "upload.php",
+            upImgExt: "jpg,jpeg,gif,png"
+        });
+    }
+</script>
+
+</html>
