@@ -4,7 +4,7 @@ var router = express.Router();
 var MongoClient = require("mongodb").MongoClient;
 const db_conn_str = 'mongodb://localhost:27017/test';
 
-
+let async = require("async")
 
 router.post('/submit', function(req, res) {
     //todo
@@ -77,33 +77,74 @@ router.all('/list', (req, res) => {
     //发送json字符串
     let title = req.query['title']
     let content = req.query['content']
+
+    //构建分页信息
+    let page_num = req.query['page_num']
+    page_num = page_num ? page_num : 1
+        // let page_size = req.query['page_size']
+    let page_size = 5
+    let total_page = 0
+    let total = 0
+
     let findData = (db, callback) => {
         //连接表
         //let conn = db.collection('user') //2.0写法
         let conn = db.db('test').collection('comment') //2.0写法
 
-        //操作数据库  查询数据
-        conn.find({}).sort({
-            _id: -1 //-1反序  1正序
-        }).toArray((err, resluts) => {
-            if (err) {
-                console.log(err)
-                return
+
+
+
+        //并行无关联
+        async.parallel([
+            callback => {
+                //操作数据库  查询数据
+                conn.find({}).toArray((err, results) => {
+                    if (err) {
+                        console.log(err)
+                        return
+                    }
+                    total_page = Math.ceil(results.length / page_size)
+                    total = results.length
+                    callback(null, total_page, total)
+                })
+            },
+            callback => {
+                conn.find({}).sort({
+                        _id: -1 //-1反序  1正序
+                    }).skip((page_num - 1) * page_size).limit(page_size)
+                    .toArray((err, results) => {
+                        if (err) {
+                            console.log(err)
+                            return
+                        }
+                        callback(null, results)
+                    })
             }
-            callback(resluts)
+        ], (err, result) => {
+            console.log(result)
+
+            callback(result[1])
         })
+
+
+
+
     }
+
     MongoClient.connect(db_conn_str, (err, db) => {
         if (err) {
             console.log(err)
             return
         }
         console.log("连接成功")
-        findData(db, results => {
+        findData(db, (results) => {
             console.log(results)
             console.log("提交成功")
             res.render('list.ejs', {
-                results: results
+                page_num: page_num,
+                total_page: total_page,
+                results: results,
+                count: total
             })
             db.close()
 

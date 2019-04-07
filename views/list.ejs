@@ -59,6 +59,17 @@
                     </td>
                 </tr>
                 <% }) %>
+                    <tr>
+                        <td colspan="3">
+                            <a href="./list?page_num=1">首页</a>
+                            <a href="./list?page_num=<%= page_num>1?parseInt(page_num,10)-1:1 %>">上一页</a>
+                            <a href="./list?page_num=<%= page_num<total_page?parseInt(page_num,10)+1:total_page %>">下一页</a>
+                            <a href="./list?page_num=<%=total_page%>">尾页</a>
+                            <span><%= page_num %>/<%= total_page %></span>
+                            <span>总<%= count%>条记录</span>
+                        </td>
+
+                    </tr>
         </table>
 </body>
 
