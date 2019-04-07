@@ -1,7 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var session = require("express-session")
-    /* GET home page. */
+
+//文件操作
+var multiparty = require("multiparty")
+var fs = require("fs")
+
+
+/* GET home page. */
 router.get('/', function(req, res, next) {
     //render 渲染模版 去view 文件下找indx.ejs
     res.render('index', {
@@ -41,5 +47,45 @@ router.get("/comment", function(req, res, next) {
     res.render("comment", {})
 })
 
+//处理图片文件
+router.post("/uploadImg", (req, res) => {
+    let form = new multiparty.Form()
 
-module.exports = router;
+    //设置编码
+    form.encoding = "utf-8"
+
+    //设置文件存储路径
+    form.uploadDir = './uploadtemp'
+
+    //设置文件大小
+    form.maxFileSize = 20 * 1024 * 1024
+
+    form.parse(req, (err, fields, files) => {
+        let uploadurl = './images/upload/'
+        file = files['filedata'] //拿到文件
+        originalFilename = file[0].originalFilename; //原始文件名   前端上传的文件名称
+
+        tempPath = file[0].path //前端传的文件路径
+
+        let timestamp = new Date().getTime()
+
+        uploadurl += timestamp + originalFilename //处理文件名加上时间戳
+
+        //文件名字加上时间戳
+        newPath = './public/' + uploadurl
+        let fileReadStream = fs.createReadStream(tempPath)
+        let fileWriteStream = fs.createWriteStream(newPath)
+        fileReadStream.pipe(fileWriteStream) //创建管道流
+
+        fileWriteStream.on('close', () => {
+            fs.unlinkSync(tempPath)
+            res.send('{"err":"","msg":"' + uploadurl + '"}')
+        })
+
+
+
+    })
+
+})
+
+module.exports = router

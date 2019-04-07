@@ -13,10 +13,10 @@
 <body>
     <%- include header %>
 
-        <form action="/comment/submit" method='post'>
+        <form id="form" action="/comment/submit" method='post'>
             标题：<input type="text" name="title" value="" />
             <br /> <br />内容：
-            <textarea name="content" id="content" cols="30" rows="10"></textarea>
+            <textarea name="content" id="content" cols="30" rows="10" value="" placeholder="请输入..."></textarea>
             <br /><br />
             <input type="submit" name="submit" value="提交">
         </form>
@@ -25,11 +25,11 @@
     $(pageInit)
 
     function pageInit() {
-        // $.extend(XHEDITOR.settings, {
-        //     shortcuts: {
-        //         'ctrl+enter': submitForm
-        //     }
-        // })
+        $.extend(XHEDITOR.settings, {
+            shortcuts: {
+                'ctrl+enter': submitForm
+            }
+        })
         $('#content').xheditor({
             html5Upload: false, //兼容高版本浏览器
             upMultiple: '1', //兼容高版本浏览器
@@ -38,17 +38,33 @@
             tools: 'full',
             skin: 'default',
             showBlocktag: true,
-            internalScript: false,
-            internalStyle: false,
-            width: 300,
-            height: 200,
+            // internalScript: false,
+            // internalStyle: false,
+            width: 800,
+            height: 400,
             // loadCSS: 'http://xheditor.com/test.css',
             // fullscreen: true,
             sourceMode: true,
             forcePtag: true,
-            upImgUrl: "upload.php",
-            upImgExt: "jpg,jpeg,gif,png"
+            upLinkUrl: "/uploadImg",
+            upImgUrl: "/uploadImg",
+            upImgExt: "jpg,jpeg,gif,png",
+            onUpload: insertUpload
         });
+    }
+
+    function insertUpload(arrMsg) {
+        console.log(arrMsg)
+        console.log($("#content").val())
+        var i, msg;
+        for (i = 0; i < arrMsg.length; i++) {
+            msg = arrMsg[i];
+            $("#content").append('<option value="' + msg.id + '">' + msg.localname + '</option>');
+        }
+    }
+
+    function submitForm() {
+        $('#form').submit();
     }
 </script>
 
