@@ -46,11 +46,19 @@
                 <th>标题</th>
                 <th>内容</th>
             </tr>
-            <tr>
-                <td>222</td>
-                <td>333</td>
-                <td>444</td>
-            </tr>
+            <% results.forEach(function(item,index){  %>
+                <tr>
+                    <td>
+                        <%= (index+1) %>
+                    </td>
+                    <td>
+                        <%- item.title %>
+                    </td>
+                    <td>
+                        <%- item.content %>
+                    </td>
+                </tr>
+                <% }) %>
         </table>
 </body>
 

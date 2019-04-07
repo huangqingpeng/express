@@ -81,15 +81,11 @@ router.all('/list', (req, res) => {
         //连接表
         //let conn = db.collection('user') //2.0写法
         let conn = db.db('test').collection('comment') //2.0写法
-            //获得前端提交的数据
-        let data = [{
-            username,
-            title,
-            content
-        }]
 
-        //操作数据库  插入数据
-        conn.find(data, (err, resluts) => {
+        //操作数据库  查询数据
+        conn.find({}).sort({
+            _id: -1 //-1反序  1正序
+        }).toArray((err, resluts) => {
             if (err) {
                 console.log(err)
                 return
@@ -98,7 +94,6 @@ router.all('/list', (req, res) => {
         })
     }
     MongoClient.connect(db_conn_str, (err, db) => {
-
         if (err) {
             console.log(err)
             return
@@ -108,7 +103,7 @@ router.all('/list', (req, res) => {
             console.log(results)
             console.log("提交成功")
             res.render('list.ejs', {
-
+                results: results
             })
             db.close()
 

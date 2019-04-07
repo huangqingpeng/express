@@ -61,7 +61,7 @@ router.post("/uploadImg", (req, res) => {
     form.maxFileSize = 20 * 1024 * 1024
 
     form.parse(req, (err, fields, files) => {
-        let uploadurl = './images/upload/'
+        let uploadurl = '/images/upload/'
         file = files['filedata'] //拿到文件
         originalFilename = file[0].originalFilename; //原始文件名   前端上传的文件名称
 
