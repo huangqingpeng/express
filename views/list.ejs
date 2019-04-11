@@ -52,7 +52,9 @@
                         <%= (index+1) %>
                     </td>
                     <td>
-                        <%- item.title %>
+                        <a href="./details?uid=<%=item.uid%>">
+                            <%- item.title %>
+                        </a>
                     </td>
                     <td>
                         <%- item.content %>

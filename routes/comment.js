@@ -21,28 +21,61 @@ router.post('/submit', function(req, res) {
 
     let content = req.body['content']
 
+
     let insertData = (db, callback) => {
         //连接表
         //let conn = db.collection('user') //2.0写法
         let conn = db.db('test').collection('comment') //2.0写法
-            //获得前端提交的数据
-        let data = [{
-            username,
-            title,
-            content
-        }]
+        let ids = db.db('test').collection('ids')
+        async.waterfall([
+            callback => {
+                ids.findAndModify({
+                    name: 'comment'
+                }, [
+                    ['_id', 'desc']
+                ], {
+                    $inc: {
+                        id: 1 //id=id+1
+                    }
+                }, (err, result) => {
+                    if (err) return
+                    console.log("id自增之后")
+                    console.log(result)
 
-        //操作数据库  插入数据
-        conn.insert(data, (err, resluts) => {
-            if (err) {
-                console.log(err)
-                return
+                    callback(null, result.value.id)
+                    db.close()
+                })
+            },
+            (id, callback) => {
+
+                //获得前端提交的数据
+                let data = [{
+                    username,
+                    title,
+                    content,
+                    uid: id //数据加上自定义id
+                }]
+                console.table(data)
+                    //操作数据库  插入数据
+                conn.insert(data, (err, results) => {
+                    console.log(222)
+                    console.log(err)
+                    if (err) {
+                        console.log(err)
+                        return
+                    }
+                    console.log(results)
+                    callback(null, results)
+                })
             }
-            callback(resluts)
+        ], (err, results) => {
+            if (err) return
+            console.log(results)
+            callback(results)
         })
+
     }
     MongoClient.connect(db_conn_str, (err, db) => {
-
             if (err) {
                 console.log(err)
                 return
@@ -51,17 +84,11 @@ router.post('/submit', function(req, res) {
             insertData(db, results => {
                 console.log(results)
                 console.log("提交成功")
-                res.redirect("/comment/list")
                 db.close()
-
-                //res.send("提交成功")
+                res.redirect("/comment/list")
             })
-
-            //关闭连接
-            db.close()
         })
         //res.send('ok')
-
 })
 
 //post  get都接收    去数据库取数据  渲染在list页面
@@ -81,7 +108,8 @@ router.all('/list', (req, res) => {
     //构建分页信息
     let page_num = req.query['page_num']
     page_num = page_num ? page_num : 1
-        // let page_size = req.query['page_size']
+
+    // let page_size = req.query['page_size']
     let page_size = 5
     let total_page = 0
     let total = 0
@@ -91,11 +119,8 @@ router.all('/list', (req, res) => {
         //let conn = db.collection('user') //2.0写法
         let conn = db.db('test').collection('comment') //2.0写法
 
-
-
-
-        //并行无关联
-        async.parallel([
+        //串行
+        async.series([
             callback => {
                 //操作数据库  查询数据
                 conn.find({}).toArray((err, results) => {
@@ -105,7 +130,10 @@ router.all('/list', (req, res) => {
                     }
                     total_page = Math.ceil(results.length / page_size)
                     total = results.length
-                    callback(null, total_page, total)
+
+                    page_num = page_num <= 0 ? 1 : page_num
+                    page_num = page_num > total_page ? total_page : page_num
+                    callback(null, '')
                 })
             },
             callback => {
@@ -125,10 +153,6 @@ router.all('/list', (req, res) => {
 
             callback(result[1])
         })
-
-
-
-
     }
 
     MongoClient.connect(db_conn_str, (err, db) => {
@@ -144,22 +168,47 @@ router.all('/list', (req, res) => {
                 page_num: page_num,
                 total_page: total_page,
                 results: results,
-                count: total
+                count: total,
+
             })
             db.close()
-
-            //res.send("提交成功")
+                //res.send("提交成功")
         })
-
-        //关闭连接
-        db.close()
     })
 
+})
 
 
-    // res.render('list.ejs', {
+//详情
+router.get("/details", (req, res) => {
+    let uid = req.query['uid']
+    console.log(uid)
+    MongoClient.connect(db_conn_str, (err, db) => {
+        if (err) throw err
+        db.db("test").collection('comment', {
+            safe: true
+        }, (err, collection) => {
+            if (err) {
+                console.log(err)
+                return
+            }
+            collection.find({
+                uid: parseInt(uid)
+            }).toArray((err, results) => {
+                console.log(results)
+                res.render('details', {
+                    item: {
+                        title: results[0].title,
+                        uid: results[0].uid,
+                        content: results[0].content
+                    }
+                })
+                db.close()
+            })
+        })
 
-    // })
+    })
+
 })
 
 

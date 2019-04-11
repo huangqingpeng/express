@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<style>
+    table {
+        margin-top: 20px;
+        width: 100%;
+        border-top: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+    }
+    
+    th {
+        background: #eee;
+    }
+    
+    td,
+    th {
+        border: 1px solid #ddd;
+        height: 30px;
+        border-right: 0;
+        border-top: 0;
+        border-collapse: collapse;
+        padding: 0 10px;
+    }
+</style>
+
+<body>
+    <%- include header %>
+        <table cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col style="width: 15%;text-align: center;">
+                </col>
+                <col style="width: 25%;text-align: center;">
+                </col>
+                <col>
+                </col>
+            </colgroup>
+            <tr>
+                <th>序号</th>
+                <th>标题</th>
+                <th>内容</th>
+            </tr>
+
+            <tr>
+                <td>
+                    <%- item.uid %>
+                </td>
+                <td>
+                    <%- item.title %>
+                </td>
+                <td>
+                    <%- item.content %>
+                </td>
+            </tr>
+
+
+        </table>
+</body>
+
+</html>
